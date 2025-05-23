@@ -1,3 +1,4 @@
+
 "use client";
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
@@ -86,7 +87,8 @@ const scoreboardReducer = (state: ScoreboardState, action: Action): ScoreboardSt
       return { ...state, period: Math.max(1, state.period + action.delta) };
     case 'SET_GAME_TIME': {
       const gameTimeDelta = action.time - state.gameTime;
-      const updatePenaltyTime = (p: Penalty) => ({ ...p, remainingTime: Math.max(0, p.remainingTime - gameTimeDelta) });
+      // Penalty remaining time should decrease by the magnitude of the game clock change
+      const updatePenaltyTime = (p: Penalty) => ({ ...p, remainingTime: Math.max(0, p.remainingTime - Math.abs(gameTimeDelta)) });
       return {
         ...state,
         gameTime: Math.max(0, action.time),
@@ -204,3 +206,4 @@ export const useScoreboard = () => {
   }
   return context;
 };
+
