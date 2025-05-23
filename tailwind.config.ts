@@ -13,7 +13,7 @@ export default {
   	extend: {
       fontFamily: {
         sans: ['Inter', ...fontFamily.sans],
-        mono: ['Pixelify Sans', ...fontFamily.mono], // Use Pixelify Sans for mono
+        mono: ['Roboto Mono', ...fontFamily.mono], // Use Roboto Mono for mono
       },
   		colors: {
   			background: 'hsl(var(--background))',
@@ -98,4 +98,3 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
