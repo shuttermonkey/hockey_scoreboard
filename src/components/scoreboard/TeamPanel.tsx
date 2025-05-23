@@ -1,3 +1,4 @@
+
 "use client";
 import type { TeamState, Penalty } from './ScoreboardProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,19 +33,19 @@ export function TeamPanel({ team, isHomeTeam }: TeamPanelProps) {
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         <div className="text-center">
-          <p className="text-sm uppercase text-muted-foreground">Score</p>
+          <p className="text-sm uppercase text-muted-foreground mb-1">Score</p> {/* Added mb-1 */}
           <p className={`text-7xl md:text-8xl font-mono font-bold ${team.color} ${scoreUpdated ? 'score-updated' : ''}`}>
             {scoreDisplay}
           </p>
         </div>
         <div className="text-center">
-          <p className="text-sm uppercase text-muted-foreground">Shots</p>
+          <p className="text-sm uppercase text-muted-foreground mb-1">Shots</p> {/* Added mb-1 */}
           <p className={`text-4xl md:text-5xl font-mono font-bold ${team.color}`}>
             {team.shots}
           </p>
         </div>
         <div className="space-y-2">
-           <p className="text-sm uppercase text-muted-foreground text-center">Penalties</p>
+           <p className="text-sm uppercase text-muted-foreground text-center mb-1">Penalties</p> {/* Added mb-1 */}
           {team.penalties.slice(0, 2).map((penalty, index) => (
             <PenaltyPanel key={penalty.id} penalty={penalty} teamColor={team.color} />
           ))}

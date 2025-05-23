@@ -104,7 +104,7 @@ body {
   }
   /* Ensure monospaced font is applied correctly */
   .font-mono {
-    font-family: var(--font-geist-mono) !important;
+    font-family: var(--font-vt323) !important; /* Use VT323 for font-mono */
   }
 }
 
