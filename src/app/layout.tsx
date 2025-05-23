@@ -1,16 +1,16 @@
 
 import type {Metadata} from 'next';
-import { Inter, Orbitron } from 'next/font/google'; // Import Inter instead of Geist_Sans
+import { Inter, Orbitron } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ // Instantiate Inter
+const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
 });
 
 const orbitron = Orbitron({
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: '700', // Simplified to a single, common bold weight
   subsets: ['latin'],
   variable: '--font-orbitron',
   display: 'swap',
