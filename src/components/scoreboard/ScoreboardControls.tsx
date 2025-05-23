@@ -24,12 +24,10 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
   const currentTeam = team === 'home' ? state.homeTeam : state.awayTeam;
   const [penaltyPlayer, setPenaltyPlayer] = useState('');
   const [penaltyTime, setPenaltyTime] = useState(formatTimeMMSS(DEFAULT_PENALTY_DURATION_SECONDS));
-
-  // The teamColor for the picker is now directly from the global state (hex string)
   const [teamColor, setTeamColor] = useState(currentTeam.color);
 
   useEffect(() => {
-    setTeamColor(currentTeam.color); // Sync with global state if it changes elsewhere
+    setTeamColor(currentTeam.color); 
   }, [currentTeam.color]);
 
 
@@ -59,8 +57,8 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
   };
 
   const handleColorChange = (newColor: string) => {
-    setTeamColor(newColor); // Update local state for picker
-    dispatch({ type: 'SET_TEAM_COLOR', team, color: newColor }); // Dispatch hex color to global state
+    setTeamColor(newColor); 
+    dispatch({ type: 'SET_TEAM_COLOR', team, color: newColor }); 
   };
 
 
@@ -127,8 +125,7 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
           dispatch({ type: 'SET_TEAM_NAME', team, name: team === 'home' ? DEFAULT_TEAM_NAME_HOME : DEFAULT_TEAM_NAME_AWAY });
           dispatch({ type: 'UPDATE_SCORE', team, delta: -currentTeam.score });
           dispatch({ type: 'SET_SHOTS', team, count: 0 });
-          // Reset color to initial default hex values from provider
-          const initialHexColor = team === 'home' ? '#F87171' : '#38BDF8'; // These are from ScoreboardProvider's initialState
+          const initialHexColor = team === 'home' ? '#F87171' : '#38BDF8'; 
           dispatch({ type: 'SET_TEAM_COLOR', team, color: initialHexColor });
           currentTeam.penalties.forEach(p => dispatch({ type: 'CLEAR_PENALTY', team, penaltyId: p.id }));
         }}>Reset {teamName}</Button>
@@ -153,11 +150,11 @@ export function ScoreboardControls() {
   }, [state.maxPeriodTime]);
 
   useEffect(() => {
-    setTimerColor(state.timerColor); // Sync with global state
+    setTimerColor(state.timerColor); 
   }, [state.timerColor]);
 
   const handleSetTime = () => {
-    dispatch({ type: 'SET_GAME_TIME', time: parseTimeMMSS(manualTime) });
+    dispatch({ type: 'SET_GAME_TIME', time: parseTimeMMSS(manualTime), adjustPenalties: true });
   };
 
   const handleSetMaxPeriodTime = () => {
@@ -170,13 +167,11 @@ export function ScoreboardControls() {
   };
 
   const handleTimerColorChange = (newColor: string) => {
-    setTimerColor(newColor); // Update local state for picker
+    setTimerColor(newColor); 
     dispatch({ type: 'SET_TIMER_COLOR', color: newColor });
   };
 
   const handleResetAll = () => {
-    // Dispatch RESET_GAME_STATE without partialReset to revert to initial defaults for game data
-    // Settings like maxPeriodTime and timerMode are preserved by the reducer's logic for RESET_GAME_STATE
     dispatch({type: 'RESET_GAME_STATE'});
     toast({ title: "Scoreboard Reset", description: "Game data has been reset to default. Timer settings preserved."});
   };
@@ -211,7 +206,7 @@ export function ScoreboardControls() {
             <ControlButton
               label="Reset Timer"
               icon={RotateCcw}
-              onClick={() => dispatch({ type: 'SET_GAME_TIME', time: state.timerMode === 'countdown' ? state.maxPeriodTime : 0 })}
+              onClick={() => dispatch({ type: 'SET_GAME_TIME', time: state.timerMode === 'countdown' ? state.maxPeriodTime : 0, adjustPenalties: false })}
               variant="outline"
             />
           </div>

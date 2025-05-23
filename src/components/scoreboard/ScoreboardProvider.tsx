@@ -37,7 +37,7 @@ type Action =
   | { type: 'UPDATE_SCORE'; team: 'home' | 'away'; delta: number }
   | { type: 'SET_SHOTS'; team: 'home' | 'away'; count: number }
   | { type: 'UPDATE_PERIOD'; delta: number }
-  | { type: 'SET_GAME_TIME'; time: number }
+  | { type: 'SET_GAME_TIME'; time: number; adjustPenalties?: boolean }
   | { type: 'TOGGLE_TIMER_RUNNING' }
   | { type: 'SET_TIMER_MODE'; mode: 'countdown' | 'countup' }
   | { type: 'ADD_PENALTY'; team: 'home' | 'away'; playerNumber: string; duration: number }
@@ -88,13 +88,30 @@ const scoreboardReducer = (state: ScoreboardState, action: Action): ScoreboardSt
     }
     case 'UPDATE_PERIOD':
       return { ...state, period: Math.max(1, state.period + action.delta) };
-    case 'SET_GAME_TIME':
-      // Manually setting game time should not affect penalty durations.
-      // Penalties only tick down with the 'TICK' action or are managed by ADD/CLEAR.
+    case 'SET_GAME_TIME': {
+      let newHomePenalties = state.homeTeam.penalties;
+      let newAwayPenalties = state.awayTeam.penalties;
+
+      if (action.adjustPenalties === true) {
+        const gameTimeAdjustment = state.gameTime - action.time; // oldTime - newTime
+
+        const adjustPenalties = (penalties: Penalty[]): Penalty[] =>
+          penalties.map(p => ({
+            ...p,
+            remainingTime: Math.max(0, p.remainingTime - gameTimeAdjustment),
+          })).filter(p => p.remainingTime > 0); // Keep active penalties
+
+        newHomePenalties = adjustPenalties(state.homeTeam.penalties);
+        newAwayPenalties = adjustPenalties(state.awayTeam.penalties);
+      }
+
       return {
         ...state,
         gameTime: Math.max(0, action.time),
+        homeTeam: { ...state.homeTeam, penalties: newHomePenalties },
+        awayTeam: { ...state.awayTeam, penalties: newAwayPenalties },
       };
+    }
     case 'TOGGLE_TIMER_RUNNING':
       return { ...state, isTimerRunning: !state.isTimerRunning };
     case 'SET_TIMER_MODE':
@@ -127,13 +144,12 @@ const scoreboardReducer = (state: ScoreboardState, action: Action): ScoreboardSt
       };
     }
     case 'RESET_GAME_STATE':
-      // Resets game-specific data to initial defaults, but preserves some settings like maxPeriodTime and timerMode.
-      // Team names and colors are reset to their initial defaults from initialState.
       return {
-        ...initialState, // This brings initial scores, shots, penalties, gameTime, period, team names, team colors, timerColor
-        ...action.partialReset, // Apply any specific partial overrides if provided
-        maxPeriodTime: state.maxPeriodTime, // Preserve current max period time
-        timerMode: state.timerMode,         // Preserve current timer mode
+        ...initialState,
+        ...action.partialReset,
+        maxPeriodTime: state.maxPeriodTime, 
+        timerMode: state.timerMode,
+        timerColor: state.timerColor, // Preserve timer color on reset all
       };
     case 'TICK': {
       if (!state.isTimerRunning) return state;
@@ -163,7 +179,6 @@ const scoreboardReducer = (state: ScoreboardState, action: Action): ScoreboardSt
       };
     }
     case 'SET_MAX_PERIOD_TIME':
-      // If not running and in countdown mode, update game time to new max
       const newCurrentGameTime = (!state.isTimerRunning && state.timerMode === 'countdown') ? action.time : state.gameTime;
       return { ...state, maxPeriodTime: Math.max(0, action.time), gameTime: newCurrentGameTime };
     case 'SET_TIMER_COLOR':
@@ -187,11 +202,9 @@ export const ScoreboardProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(timerId);
   }, [state.isTimerRunning]);
 
-  // Toast notification when timer stops at 0
   useEffect(() => {
     if (state.timerMode === 'countdown' && state.gameTime === 0 && !state.isTimerRunning) {
       // This effect might be redundant if TICK stops the timer.
-      // Add more robust condition if needed.
     }
   }, [state.gameTime, state.isTimerRunning, state.timerMode, toast]);
 
