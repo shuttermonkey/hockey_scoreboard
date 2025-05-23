@@ -1,17 +1,18 @@
-import type {Metadata} from 'next';
-import { Geist, Orbitron } from 'next/font/google'; // Import Orbitron instead of VT323
-import './globals.css';
-import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+import type {Metadata} from 'next';
+import { Inter, Orbitron } from 'next/font/google'; // Import Inter instead of Geist_Sans
+import './globals.css';
+import { Toaster } from "@/components/ui/toaster";
+
+const inter = Inter({ // Instantiate Inter
+  variable: '--font-inter',
   subsets: ['latin'],
 });
 
-const orbitron = Orbitron({ // Configure Orbitron
-  weight: ['700'], // Use a bolder weight for a clearer digital look
+const orbitron = Orbitron({
+  weight: ['400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
-  variable: '--font-orbitron', // CSS variable for Orbitron
+  variable: '--font-orbitron',
   display: 'swap',
 });
 
@@ -27,9 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${orbitron.variable} antialiased bg-background text-foreground`}> {/* Add orbitron.variable */}
+      <body className={`${inter.variable} ${orbitron.variable} antialiased bg-background text-foreground`}>
         {children}
-        <Toaster /> {/* Add Toaster for notifications */}
+        <Toaster />
       </body>
     </html>
   );

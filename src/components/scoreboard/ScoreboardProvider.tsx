@@ -88,17 +88,13 @@ const scoreboardReducer = (state: ScoreboardState, action: Action): ScoreboardSt
     }
     case 'UPDATE_PERIOD':
       return { ...state, period: Math.max(1, state.period + action.delta) };
-    case 'SET_GAME_TIME': {
-      const gameTimeDelta = action.time - state.gameTime;
-      // Penalties should decrease by the magnitude of clock change, regardless of direction
-      const updatePenaltyTime = (p: Penalty) => ({ ...p, remainingTime: Math.max(0, p.remainingTime - Math.abs(gameTimeDelta)) });
+    case 'SET_GAME_TIME':
+      // Manually setting game time should not affect penalty durations.
+      // Penalties only tick down with the 'TICK' action or are managed by ADD/CLEAR.
       return {
         ...state,
         gameTime: Math.max(0, action.time),
-        homeTeam: { ...state.homeTeam, penalties: state.homeTeam.penalties.map(updatePenaltyTime).filter(p => p.remainingTime > 0) },
-        awayTeam: { ...state.awayTeam, penalties: state.awayTeam.penalties.map(updatePenaltyTime).filter(p => p.remainingTime > 0) },
       };
-    }
     case 'TOGGLE_TIMER_RUNNING':
       return { ...state, isTimerRunning: !state.isTimerRunning };
     case 'SET_TIMER_MODE':

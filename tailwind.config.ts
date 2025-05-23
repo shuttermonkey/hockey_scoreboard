@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 const { fontFamily } = require('tailwindcss/defaultTheme');
 
@@ -11,7 +12,7 @@ export default {
   theme: {
   	extend: {
       fontFamily: {
-        sans: ['var(--font-geist-sans)', ...fontFamily.sans],
+        sans: ['var(--font-inter)', ...fontFamily.sans], // Use Inter for sans-serif
         mono: ['var(--font-orbitron)', ...fontFamily.mono],
       },
   		colors: {
