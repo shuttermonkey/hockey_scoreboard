@@ -12,8 +12,8 @@ export default {
   theme: {
   	extend: {
       fontFamily: {
-        sans: ['Inter', ...fontFamily.sans], // Use Inter directly
-        mono: ['Orbitron', ...fontFamily.mono], // Use Orbitron directly
+        sans: ['Inter', ...fontFamily.sans],
+        mono: ['VT323', ...fontFamily.mono], // Use VT323 for mono
       },
   		colors: {
   			background: 'hsl(var(--background))',
