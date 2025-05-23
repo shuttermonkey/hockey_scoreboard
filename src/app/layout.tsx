@@ -7,10 +7,11 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const orbitron = Orbitron({
-  weight: '700', // Simplified to a single, common bold weight
+  weight: '700',
   subsets: ['latin'],
   variable: '--font-orbitron',
   display: 'swap',

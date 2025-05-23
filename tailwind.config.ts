@@ -12,7 +12,7 @@ export default {
   theme: {
   	extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', ...fontFamily.sans], // Use Inter for sans-serif
+        sans: ['var(--font-inter)', ...fontFamily.sans],
         mono: ['var(--font-orbitron)', ...fontFamily.mono],
       },
   		colors: {
