@@ -13,7 +13,7 @@ import { DEFAULT_PENALTY_DURATION_SECONDS, DEFAULT_PERIOD_TIME_SECONDS, MAX_PENA
 import { parseTimeMMSS, formatTimeMMSS } from '@/lib/timeUtils';
 import { Play, Pause, RotateCcw, Plus, Minus, Settings, Trash2, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { HexColorPicker } from 'react-colorful'; // Simple color picker
+import { HexColorPicker } from 'react-colorful'; 
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,17 +24,12 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
   const currentTeam = team === 'home' ? state.homeTeam : state.awayTeam;
   const [penaltyPlayer, setPenaltyPlayer] = useState('');
   const [penaltyTime, setPenaltyTime] = useState(formatTimeMMSS(DEFAULT_PENALTY_DURATION_SECONDS));
-  const [teamColor, setTeamColor] = useState(currentTeam.color.startsWith('text-') ? `#${currentTeam.color.substring(currentTeam.color.lastIndexOf('-') + 1)}` : '#FFFFFF'); // Placeholder, needs robust parsing or direct hex storage
+  
+  // The teamColor for the picker is now directly from the global state (hex string)
+  const [teamColor, setTeamColor] = useState(currentTeam.color);
 
-  // Simplified color parsing (example, ideally store hex directly in state)
   useEffect(() => {
-    let colorHex = '#FFFFFF'; // Default
-    if (currentTeam.color.includes('red')) colorHex = '#F87171'; // red-400
-    if (currentTeam.color.includes('sky')) colorHex = '#38BDF8'; // sky-400
-    if (currentTeam.color.includes('green')) colorHex = '#4ADE80'; // green-400
-    if (currentTeam.color.includes('yellow')) colorHex = '#FACC15'; // yellow-400
-    // Add more or use a proper mapping
-    setTeamColor(colorHex);
+    setTeamColor(currentTeam.color); // Sync with global state if it changes elsewhere
   }, [currentTeam.color]);
 
 
@@ -64,23 +59,15 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
   };
   
   const handleColorChange = (newColor: string) => {
-    setTeamColor(newColor);
-    // Convert hex to a Tailwind class or style. For simplicity, we'll store a class.
-    // This is a simplified example. Real mapping needed for many colors.
-    let tailwindColorClass = 'text-neutral-400'; // default
-    if (newColor.toLowerCase() === '#f87171') tailwindColorClass = 'text-red-400';
-    else if (newColor.toLowerCase() === '#38bdf8') tailwindColorClass = 'text-sky-400';
-    else if (newColor.toLowerCase() === '#4ade80') tailwindColorClass = 'text-green-400';
-    else if (newColor.toLowerCase() === '#facc15') tailwindColorClass = 'text-yellow-400';
-    // A more robust solution might involve setting CSS variables or inline styles.
-    dispatch({ type: 'SET_TEAM_COLOR', team, color: tailwindColorClass });
+    setTeamColor(newColor); // Update local state for picker
+    dispatch({ type: 'SET_TEAM_COLOR', team, color: newColor }); // Dispatch hex color to global state
   };
 
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("flex items-center justify-between", currentTeam.color)}>
+        <CardTitle className="flex items-center justify-between" style={{ color: currentTeam.color }}>
           {teamName} Controls
           <Popover>
             <PopoverTrigger asChild>
@@ -111,7 +98,7 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
           <div className="space-y-2">
             {currentTeam.penalties.map(p => (
               <div key={p.id} className="flex items-center justify-between p-2 bg-muted rounded-md">
-                <span>P{p.playerNumber} - {formatTimeMMSS(p.remainingTime)}</span>
+                <span style={{ color: currentTeam.color }}>P{p.playerNumber} - {formatTimeMMSS(p.remainingTime)}</span>
                 <Button variant="ghost" size="icon" onClick={() => dispatch({ type: 'CLEAR_PENALTY', team, penaltyId: p.id })}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -138,6 +125,9 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
           dispatch({ type: 'SET_TEAM_NAME', team, name: team === 'home' ? DEFAULT_TEAM_NAME_HOME : DEFAULT_TEAM_NAME_AWAY });
           dispatch({ type: 'UPDATE_SCORE', team, delta: -currentTeam.score });
           dispatch({ type: 'SET_SHOTS', team, count: 0 });
+          // Reset color to initial default hex values from provider
+          const initialHexColor = team === 'home' ? '#F87171' : '#38BDF8';
+          dispatch({ type: 'SET_TEAM_COLOR', team, color: initialHexColor });
           currentTeam.penalties.forEach(p => dispatch({ type: 'CLEAR_PENALTY', team, penaltyId: p.id }));
         }}>Reset {teamName}</Button>
       </CardFooter>
@@ -246,3 +236,4 @@ export function ScoreboardControls() {
     </div>
   );
 }
+

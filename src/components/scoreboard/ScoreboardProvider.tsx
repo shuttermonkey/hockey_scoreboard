@@ -17,7 +17,7 @@ export interface TeamState {
   score: number;
   shots: number;
   penalties: Penalty[];
-  color: string; // For UI elements specific to the team, e.g. "text-red-500"
+  color: string; // Hex color string, e.g., "#FF0000"
 }
 
 export interface ScoreboardState {
@@ -32,7 +32,7 @@ export interface ScoreboardState {
 
 type Action =
   | { type: 'SET_TEAM_NAME'; team: 'home' | 'away'; name: string }
-  | { type: 'SET_TEAM_COLOR'; team: 'home' | 'away'; color: string }
+  | { type: 'SET_TEAM_COLOR'; team: 'home' | 'away'; color: string } // color is hex string
   | { type: 'UPDATE_SCORE'; team: 'home' | 'away'; delta: number }
   | { type: 'SET_SHOTS'; team: 'home' | 'away'; count: number }
   | { type: 'UPDATE_PERIOD'; delta: number }
@@ -51,12 +51,12 @@ const initialTeamState = (name: string, color: string): TeamState => ({
   score: 0,
   shots: 0,
   penalties: [],
-  color,
+  color, // Hex color string
 });
 
 export const initialState: ScoreboardState = {
-  homeTeam: initialTeamState(DEFAULT_TEAM_NAME_HOME, 'text-red-400'),
-  awayTeam: initialTeamState(DEFAULT_TEAM_NAME_AWAY, 'text-sky-400'),
+  homeTeam: initialTeamState(DEFAULT_TEAM_NAME_HOME, '#F87171'), // Approx Tailwind red-400
+  awayTeam: initialTeamState(DEFAULT_TEAM_NAME_AWAY, '#38BDF8'), // Approx Tailwind sky-400
   gameTime: DEFAULT_PERIOD_TIME_SECONDS,
   period: 1,
   isTimerRunning: false,
@@ -87,7 +87,6 @@ const scoreboardReducer = (state: ScoreboardState, action: Action): ScoreboardSt
       return { ...state, period: Math.max(1, state.period + action.delta) };
     case 'SET_GAME_TIME': {
       const gameTimeDelta = action.time - state.gameTime;
-      // Penalty remaining time should decrease by the magnitude of the game clock change
       const updatePenaltyTime = (p: Penalty) => ({ ...p, remainingTime: Math.max(0, p.remainingTime - Math.abs(gameTimeDelta)) });
       return {
         ...state,
@@ -182,10 +181,6 @@ export const ScoreboardProvider = ({ children }: { children: ReactNode }) => {
   // Toast notification when timer stops at 0
   useEffect(() => {
     if (state.timerMode === 'countdown' && state.gameTime === 0 && !state.isTimerRunning) {
-      const wasRunning = scoreboardReducer(state, { type: 'TOGGLE_TIMER_RUNNING'}).isTimerRunning; // Check previous state hackily
-      // This logic is tricky because isTimerRunning is already false. Check if it *just* turned 0.
-      // A better way would be to check if previous gameTime was > 0.
-      // For now, let's assume the TICK action handles this.
       // This effect might be redundant if TICK stops the timer.
       // Add more robust condition if needed.
     }
