@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import { Geist, VT323 } from 'next/font/google'; // Import VT323, remove Geist_Mono
+import { Geist, Orbitron } from 'next/font/google'; // Import Orbitron instead of VT323
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
@@ -8,10 +8,10 @@ const geistSans = Geist({
   subsets: ['latin'],
 });
 
-const vt323 = VT323({ // Configure VT323
-  weight: ['400'], // VT323 typically only has a 400 weight
+const orbitron = Orbitron({ // Configure Orbitron
+  weight: ['700'], // Use a bolder weight for a clearer digital look
   subsets: ['latin'],
-  variable: '--font-vt323', // CSS variable for VT323
+  variable: '--font-orbitron', // CSS variable for Orbitron
   display: 'swap',
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${vt323.variable} antialiased bg-background text-foreground`}> {/* Add vt323.variable */}
+      <body className={`${geistSans.variable} ${orbitron.variable} antialiased bg-background text-foreground`}> {/* Add orbitron.variable */}
         {children}
         <Toaster /> {/* Add Toaster for notifications */}
       </body>

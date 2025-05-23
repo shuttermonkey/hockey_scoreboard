@@ -104,7 +104,7 @@ body {
   }
   /* Ensure monospaced font is applied correctly */
   .font-mono {
-    font-family: var(--font-vt323) !important; /* Use VT323 for font-mono */
+    font-family: var(--font-orbitron) !important; /* Use Orbitron for font-mono */
   }
 }
 
