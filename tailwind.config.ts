@@ -12,8 +12,10 @@ export default {
   theme: {
   	extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', ...fontFamily.sans],
-        mono: ['var(--font-orbitron)', ...fontFamily.mono],
+        // sans: ['var(--font-inter)', ...fontFamily.sans], // Temporarily use default system fonts
+        // mono: ['var(--font-orbitron)', ...fontFamily.mono], // Temporarily use default system fonts
+        sans: [...fontFamily.sans],
+        mono: [...fontFamily.mono],
       },
   		colors: {
   			background: 'hsl(var(--background))',
