@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useScoreboard } from './ScoreboardProvider';
@@ -8,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from '@/components/ui/separator';
 import { ControlButton } from './ControlButton';
-import { DEFAULT_PENALTY_DURATION_SECONDS, DEFAULT_PERIOD_TIME_SECONDS } from '@/config/scoreboardConfig';
+import { DEFAULT_PENALTY_DURATION_SECONDS, DEFAULT_PERIOD_TIME_SECONDS, MAX_PENALTIES_PER_TEAM, DEFAULT_TEAM_NAME_HOME, DEFAULT_TEAM_NAME_AWAY } from '@/config/scoreboardConfig';
 import { parseTimeMMSS, formatTimeMMSS } from '@/lib/timeUtils';
 import { Play, Pause, RotateCcw, Plus, Minus, Settings, Trash2, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
