@@ -13,7 +13,7 @@ import { DEFAULT_PENALTY_DURATION_SECONDS, DEFAULT_PERIOD_TIME_SECONDS, MAX_PENA
 import { parseTimeMMSS, formatTimeMMSS } from '@/lib/timeUtils';
 import { Play, Pause, RotateCcw, Plus, Minus, Settings, Trash2, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { HexColorPicker } from 'react-colorful'; 
+import { HexColorPicker } from 'react-colorful';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,7 +24,7 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
   const currentTeam = team === 'home' ? state.homeTeam : state.awayTeam;
   const [penaltyPlayer, setPenaltyPlayer] = useState('');
   const [penaltyTime, setPenaltyTime] = useState(formatTimeMMSS(DEFAULT_PENALTY_DURATION_SECONDS));
-  
+
   // The teamColor for the picker is now directly from the global state (hex string)
   const [teamColor, setTeamColor] = useState(currentTeam.color);
 
@@ -57,7 +57,7 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
       dispatch({ type: 'SET_SHOTS', team, count: val });
     }
   };
-  
+
   const handleColorChange = (newColor: string) => {
     setTeamColor(newColor); // Update local state for picker
     dispatch({ type: 'SET_TEAM_COLOR', team, color: newColor }); // Dispatch hex color to global state
@@ -67,11 +67,13 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between" style={{ color: currentTeam.color }}>
-          {teamName} Controls
+        <CardTitle className="flex items-center justify-between">
+          <span style={{ color: currentTeam.color }}>{teamName} Controls</span>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon"><Palette className="h-5 w-5" /></Button>
+              <Button variant="ghost" size="icon" title={`Change ${teamName} Color`}>
+                <Palette className="h-5 w-5" style={{ color: currentTeam.color }} />
+              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
                <HexColorPicker color={teamColor} onChange={handleColorChange} />
@@ -126,7 +128,7 @@ const TeamControls = ({ team, teamName }: { team: 'home' | 'away', teamName: str
           dispatch({ type: 'UPDATE_SCORE', team, delta: -currentTeam.score });
           dispatch({ type: 'SET_SHOTS', team, count: 0 });
           // Reset color to initial default hex values from provider
-          const initialHexColor = team === 'home' ? '#F87171' : '#38BDF8';
+          const initialHexColor = team === 'home' ? '#F87171' : '#38BDF8'; // These are from ScoreboardProvider's initialState
           dispatch({ type: 'SET_TEAM_COLOR', team, color: initialHexColor });
           currentTeam.penalties.forEach(p => dispatch({ type: 'CLEAR_PENALTY', team, penaltyId: p.id }));
         }}>Reset {teamName}</Button>
@@ -140,6 +142,7 @@ export function ScoreboardControls() {
   const { toast } = useToast();
   const [manualTime, setManualTime] = useState(formatTimeMMSS(state.gameTime));
   const [maxPeriodTimeInput, setMaxPeriodTimeInput] = useState(formatTimeMMSS(state.maxPeriodTime));
+  const [timerColor, setTimerColor] = useState(state.timerColor);
 
   useEffect(() => {
     setManualTime(formatTimeMMSS(state.gameTime));
@@ -148,6 +151,10 @@ export function ScoreboardControls() {
   useEffect(() => {
     setMaxPeriodTimeInput(formatTimeMMSS(state.maxPeriodTime));
   }, [state.maxPeriodTime]);
+
+  useEffect(() => {
+    setTimerColor(state.timerColor); // Sync with global state
+  }, [state.timerColor]);
 
   const handleSetTime = () => {
     dispatch({ type: 'SET_GAME_TIME', time: parseTimeMMSS(manualTime) });
@@ -161,16 +168,37 @@ export function ScoreboardControls() {
     }
     dispatch({ type: 'SET_MAX_PERIOD_TIME', time: newMaxTime });
   };
-  
+
+  const handleTimerColorChange = (newColor: string) => {
+    setTimerColor(newColor); // Update local state for picker
+    dispatch({ type: 'SET_TIMER_COLOR', color: newColor });
+  };
+
   const handleResetAll = () => {
+    // Dispatch RESET_GAME_STATE without partialReset to revert to initial defaults for game data
+    // Settings like maxPeriodTime and timerMode are preserved by the reducer's logic for RESET_GAME_STATE
     dispatch({type: 'RESET_GAME_STATE'});
-    toast({ title: "Scoreboard Reset", description: "All fields have been reset to default."});
+    toast({ title: "Scoreboard Reset", description: "Game data has been reset to default. Timer settings preserved."});
   };
 
   return (
     <div className="p-4 space-y-6">
       <Card>
-        <CardHeader><CardTitle>Game Controls</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            Game Controls
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" title="Change Timer Color">
+                  <Palette className="h-5 w-5" style={{ color: state.timerColor }} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <HexColorPicker color={timerColor} onChange={handleTimerColorChange} />
+              </PopoverContent>
+            </Popover>
+          </CardTitle>
+        </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <ControlButton
@@ -230,8 +258,8 @@ export function ScoreboardControls() {
       <Separator />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <TeamControls team="home" teamName={state.homeTeam.name || "Home Team"} />
-        <TeamControls team="away" teamName={state.awayTeam.name || "Away Team"} />
+        <TeamControls team="home" teamName={state.homeTeam.name || DEFAULT_TEAM_NAME_HOME} />
+        <TeamControls team="away" teamName={state.awayTeam.name || DEFAULT_TEAM_NAME_AWAY} />
       </div>
     </div>
   );
