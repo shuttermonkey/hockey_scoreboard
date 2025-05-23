@@ -1,21 +1,10 @@
 
 import type {Metadata} from 'next';
-import { Inter, Orbitron } from 'next/font/google'; // Re-import Inter and Orbitron
+// Removed Inter and Orbitron imports from next/font/google
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ // Re-instantiate Inter
-  variable: '--font-inter',
-  subsets: ['latin'],
-  display: 'swap',
-});
-
-const orbitron = Orbitron({ // Re-instantiate Orbitron
-  weight: '700',
-  subsets: ['latin'],
-  variable: '--font-orbitron',
-  display: 'swap',
-});
+// Removed Inter and Orbitron instantiations
 
 export const metadata: Metadata = {
   title: 'Streamline Scoreboard',
@@ -29,7 +18,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${orbitron.variable} antialiased bg-background text-foreground`}> {/* Apply font variables */}
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+      </head>
+      {/* Removed font variables from body className */}
+      <body className="antialiased bg-background text-foreground">
         {children}
         <Toaster />
       </body>
